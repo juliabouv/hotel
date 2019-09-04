@@ -16,11 +16,11 @@ module Hotel
       # raise ArgumentError for bad dates
       raise ArgumentError.new "Checkout date must be after checkin date" unless @checkout_date > @checkin_date
       raise ArgumentError.new "Checkin date cannot be before today" if @checkin_date < Date.today
-
+      
       # requires valid status
       raise ArguementError.new "#{status} is an invalid status" unless status == :UPCOMING || status == :IN_PROGRESS || status == :ENDED
       @status = status
-
+      
       # requires room or room number to initiate reservation class
       if room
         @room = room
@@ -30,11 +30,27 @@ module Hotel
       else
         raise ArgumentError, 'Room or room number is required'
       end
-      @room = room || []
+      # @room = room || []
     end
     
-    def find_room(room_number)
-      # grab instance of room by room number
+    # calculate length of reservation, use this with start and end times to check availability
+    
+    def total_reserved_nights
+      return @checkout_date - @checkin_date
+    end
+    
+    def total_cost
+      return total_reserved_nights * @room.room_cost
+    end
+    
+    def switch_status
+      if @checkin_date < Date.today && @checkout_date > Date.today
+        @status = :IN_PROGRESS
+      elsif @checkout_date < Date.today
+        @status = :ENDED
+      elsif @checkin_date > Date.today
+        @status = :UPCOMING
+      end
     end
     
     
