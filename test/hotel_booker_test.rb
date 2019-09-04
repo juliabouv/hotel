@@ -38,18 +38,29 @@ describe "HotelBooker" do
       expect(@hotel_booker.rooms.length).must_equal 20
     end
   end
-
-  describe "#list_reservations" do
+  
+  describe "#list_reservations_by_date" do
     before do
       @hotel_booker = Hotel::HotelBooker.new
     end
     
-    it "Returns array of all rooms" do
-      @hotel_booker.reservations.each do |reservation|
-        expect(room).must_be_kind_of Hotel::Reservation
-      end
+    it "Returns array of reservations" do
+      @hotel_booker.book_reservation('2020-09-15', '2020-09-18')
+      p @hotel_booker.reservations
+      @reservations = @hotel_booker.list_reservations_by_date('2020-09-16')
       
-      expect(@hotel_booker.rooms).must_be_kind_of Array
+      @reservations.each do |reservation|
+        expect(reservation).must_be_kind_of Hotel::Reservation
+      end
+      expect(@reservations).must_be_kind_of Array
+      expect(@reservations.length).must_equal 1
+    end
+    
+    it "Returns reservations only for date specified" do
+      @hotel_booker.book_reservation('2020-09-15', '2020-09-18')
+      @hotel_booker.book_reservation('2020-09-10', '2020-09-12')
+      @reservations = @hotel_booker.list_reservations_by_date('2020-09-16')
+      expect(@reservations.length).must_equal 1
     end
   end
 end
