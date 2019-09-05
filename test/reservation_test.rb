@@ -7,8 +7,8 @@ describe "Reservation" do
       room_cost: 200.00
     )
     @reservation = Hotel::Reservation.new(
-      checkin_date: Date.today.prev_day,
-      checkout_date: Date.today.next_day.next_day,
+      checkin_date: Date.today + 1,
+      checkout_date: Date.today + 4,
       room: room,
       room_number: 1
     )  
@@ -38,65 +38,14 @@ describe "Reservation" do
       )
       
       @reservation = Hotel::Reservation.new(
-        checkin_date: Date.today.prev_day,
-        checkout_date: Date.today.next_day.next_day,
+        checkin_date: Date.today + 1,
+        checkout_date: Date.today + 4,
         room: room,
         room_number: nil
       )
       expect (@reservation).must_be_instance_of Hotel::Reservation
       expect (@reservation.room_number).must_equal 1
       expect (@reservation.room_number).must_be_instance_of Integer
-    end
-    
-    it "raises an ArgumentError if check-in date is before today" do
-      room = Hotel::Room.new(
-        room_number: 1, 
-        room_cost: 200.00
-      )
-      
-      expect { 
-        @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.next_day,
-          checkout_date: Date.today.next_day,
-          room: room,
-          room_number: 1
-        )  
-      }.must_raise ArgumentError
-      
-    end
-    
-    it "raises an ArgumentError if check-out date is before check-in date" do
-      room = Hotel::Room.new(
-        room_number: 1, 
-        room_cost: 200.00
-      )
-      
-      expect { 
-        @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.next_day.next_day,
-          checkout_date: Date.today.next_day,
-          room: room,
-          room_number: 1
-        )  
-      }.must_raise ArgumentError
-      
-    end
-    
-    it "raises an ArgumentError if check-in date and check-out date are the same" do
-      room = Hotel::Room.new(
-        room_number: 1, 
-        room_cost: 200.00
-      )
-      
-      expect { 
-        @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.prev_day,
-          checkout_date: Date.today,
-          room: room,
-          room_number: 1
-        )   
-      }.must_raise ArgumentError
-      
     end
     
     it "creates instance of reservation when only room_number included" do
@@ -106,8 +55,8 @@ describe "Reservation" do
       )
       
       @reservation = Hotel::Reservation.new(
-        checkin_date: Date.today.prev_day,
-        checkout_date: Date.today.next_day.next_day,
+        checkin_date: Date.today + 1,
+        checkout_date: Date.today + 4,
         room: nil,
         room_number: 1
       )
@@ -123,8 +72,8 @@ describe "Reservation" do
       )
       
       expect { @reservation = Hotel::Reservation.new(
-        checkin_date: Date.today.prev_day,
-        checkout_date: Date.today.next_day.next_day,
+        checkin_date: Date.today + 1,
+        checkout_date: Date.today + 4,
         room: nil,
         room_number: nil
         )   }.must_raise ArgumentError
@@ -156,8 +105,8 @@ describe "Reservation" do
       end
       it "@status is :UPCOMING in reservation is booked in the future" do
         @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.next_day.next_day,
-          checkout_date: Date.today.next_day,
+          checkin_date: Date.today + 3,
+          checkout_date: Date.today + 6,
           room: @room,
           room_number: 1
         )  
@@ -166,8 +115,8 @@ describe "Reservation" do
       end
       it "@status is :IN_PROGRESS when reservation is currently happening" do
         @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.prev_day,
-          checkout_date: Date.today.next_day,
+          checkin_date: Date.today - 1,
+          checkout_date: Date.today + 2,
           room: @room,
           room_number: 1
         )  
@@ -177,8 +126,8 @@ describe "Reservation" do
       
       it "@status is :ENDED when reservation is over" do
         @reservation = Hotel::Reservation.new(
-          checkin_date: Date.today.prev_day.prev_day,
-          checkout_date: Date.today.prev_day,
+          checkin_date: Date.today - 4,
+          checkout_date: Date.today - 2,
           room: @room,
           room_number: 1
         )  
