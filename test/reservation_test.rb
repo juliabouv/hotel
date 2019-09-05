@@ -3,7 +3,7 @@ require_relative 'test_helper'
 describe "Reservation" do
   before do
     room = Hotel::Room.new(
-      room_number: 1, 
+      number: 1, 
       room_cost: 200.00
     )
     @reservation = Hotel::Reservation.new(
@@ -33,7 +33,7 @@ describe "Reservation" do
     
     it "creates instance with room_number, when only room included" do
       room = Hotel::Room.new(
-        room_number: 1, 
+        number: 1, 
         room_cost: 200.00
       )
       
@@ -50,7 +50,7 @@ describe "Reservation" do
     
     it "creates instance of reservation when only room_number included" do
       room = Hotel::Room.new(
-        room_number: 1, 
+        number: 1, 
         room_cost: 200.00
       )
       
@@ -67,7 +67,7 @@ describe "Reservation" do
     
     it "raises an ArgumentError if no Room or room_number provided" do
       room = Hotel::Room.new(
-        room_number: 1, 
+        number: 1, 
         room_cost: 200.00
       )
       
@@ -99,7 +99,7 @@ describe "Reservation" do
     describe "#switch_status" do
       before do
         @room = Hotel::Room.new(
-          room_number: 1, 
+          number: 1, 
           room_cost: 200.00
         )
       end
