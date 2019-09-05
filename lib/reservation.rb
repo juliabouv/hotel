@@ -9,13 +9,13 @@ module Hotel
     
     def initialize(checkin_date:, checkout_date:, status: :UPCOMING, room: nil, room_number: nil)
       # turn dates to Time instances
-      checkin_date = Date.parse(checkin_date)    
-      checkout_date = Date.parse(checkout_date) 
+      # checkin_date = Date.parse(checkin_date)    
+      # checkout_date = Date.parse(checkout_date) 
       @checkin_date = checkin_date
       @checkout_date = checkout_date
       # raise ArgumentError for bad dates
-      raise ArgumentError.new "Checkout date must be after checkin date" unless @checkout_date > @checkin_date
-      raise ArgumentError.new "Checkin date cannot be before today" if @checkin_date < Date.today
+      # raise ArgumentError.new "Checkout date must be after checkin date" unless @checkout_date > @checkin_date
+      # raise ArgumentError.new "Checkin date cannot be before today" if @checkin_date < Date.today
       
       # requires valid status
       raise ArguementError.new "#{status} is an invalid status" unless status == :UPCOMING || status == :IN_PROGRESS || status == :ENDED
@@ -26,14 +26,13 @@ module Hotel
         @room = room
         @room_number = room.room_number
       elsif room_number
-        @room_number = room.room_number
+        @room_number = room_number
       else
         raise ArgumentError, 'Room or room number is required'
       end
       # @room = room || []
     end
     
-    # calculate length of reservation, use this with start and end times to check availability
     
     def total_reserved_nights
       return @checkout_date - @checkin_date
