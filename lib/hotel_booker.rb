@@ -21,12 +21,16 @@ module Hotel
 
     def list_reservations_by_date(date)
       # select reservations that are within the start and end date range
-      date = Date.parse(date)
       return @reservations.select { |reservation| reservation.checkin_date <= date && reservation.checkout_date >= date }
     end
     
 
     def book_reservation(checkin_date, checkout_date)
+       # raise ArgumentError for bad dates
+       raise ArgumentError.new "Checkout date must be after checkin date" unless checkout_date > checkin_date
+       raise ArgumentError.new "Checkin date cannot be before today" if checkin_date < Date.today
+       raise ArgumentError.new "Only overnight stays allowed!" if checkin_date == checkout_date
+       
       reservation = Hotel::Reservation.new(
         checkin_date: checkin_date,
         checkout_date: checkout_date,
