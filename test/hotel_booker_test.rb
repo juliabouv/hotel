@@ -43,14 +43,16 @@ describe "HotelBooker" do
     before do
       @hotel_booker = Hotel::HotelBooker.new
     end
-
-    it "adds the reservation to the @reservations array" do
-     @hotel_booker.book_reservation(Date.today + 4, Date.today + 8)
     
-     expect(@hotel_booker.reservations.length).must_equal 1
+    it "adds the reservation to the @reservations array" do
+      @hotel_booker.book_reservation(Date.today + 4, Date.today + 8)
       
+      expect(@hotel_booker.reservations.length).must_equal 1
+      @hotel_booker.reservations.each do |reservation|
+        expect(reservation).must_be_instance_of Hotel::Reservation
+      end
     end
-
+    
     it "raises an ArgumentError if check-in date is before today" do
       expect { 
         @hotel_booker.book_reservation(Date.today - 1, Date.today)
@@ -97,4 +99,30 @@ describe "HotelBooker" do
     end
   end
   
+  describe "list_reservations_by_room" do
+    before do
+      @hotel_booker = Hotel::HotelBooker.new
+      @hotel_booker.book_reservation(Date.today + 2, Date.today + 5, room_number: 1)
+    end
+    
+    it "Returns array of reservations" do
+      reservations = @hotel_booker.list_reservations_by_room(1)
+      
+      reservations.each do |reservation|
+        expect(reservation).must_be_kind_of Hotel::Reservation
+      end
+      expect(reservations).must_be_kind_of Array
+      expect(reservations.length).must_equal 1
+    end
+
+    it "Returns reservations only for room specified" do
+      @hotel_booker.book_reservation(Date.today + 3, Date.today + 6, room_number: 5)
+      @hotel_booker.book_reservation(Date.today + 3, Date.today + 6, room_number: 10)
+      @hotel_booker.book_reservation(Date.today + 2, Date.today + 10, room_number: 1)
+
+      reservations = @hotel_booker.list_reservations_by_room(1)
+      expect(reservations).must_be_kind_of Array
+      expect(reservations.length).must_equal 2
+    end
+  end
 end
