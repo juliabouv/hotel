@@ -73,6 +73,43 @@ describe "HotelBooker" do
       }.must_raise ArgumentError
       
     end
+
+    it "books room with room_number argument if available" do
+      @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 1)
+      expect(@hotel_booker.reservations.length).must_equal 1
+      expect(@hotel_booker.reservations[0].room_number).must_equal 1
+
+      @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 5)
+      expect(@hotel_booker.reservations.length).must_equal 2
+      expect(@hotel_booker.reservations[1].room_number).must_equal 5
+    end
+
+    it "books first available room if no room_number argument provided" do
+      20.times do |index|
+        @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
+        expect(@hotel_booker.reservations.length).must_equal 1 + index
+      end
+
+      @hotel_booker.reservations.each_with_index do |reservation, index|
+        expect(reservation.room_number).must_equal (1 + index)
+      end
+    end
+
+    it "raises an ArgumentError if you try to book a room_number that is unavailable for your requested dates" do
+      @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 5)
+      expect { 
+        @hotel_booker.book_reservation(Date.today + 4, Date.today + 4, room_number: 5)
+      }.must_raise ArgumentError
+    end
+
+    it "raises an ArgumentError if no rooms are available" do
+      20.times do
+        @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
+      end
+      expect { 
+        @hotel_booker.book_reservation(Date.today + 4, Date.today + 6)
+      }.must_raise ArgumentError
+    end
   end
   
   describe "#list_reservations_by_date" do
@@ -99,7 +136,7 @@ describe "HotelBooker" do
     end
   end
   
-  describe "list_rooms_available" do
+  describe "#list_rooms_available" do
     before do
       @hotel_booker = Hotel::HotelBooker.new
       @hotel_booker.book_reservation(Date.today + 2, Date.today + 5, room_number: 1)
@@ -121,13 +158,13 @@ describe "HotelBooker" do
       expect(rooms.length).must_equal 17
     end
     
-    it "Returns nil if no rooms available" do
+    it "Returns empty array if no rooms available" do
       # Book each room for these dates (Date.today + 2, Date.today + 5)
       17.times do |index|
         @hotel_booker.book_reservation(Date.today + 2, Date.today + 5, room_number: (4 + index))
       end
       rooms = @hotel_booker.list_rooms_available(Date.today + 2, Date.today + 5)
-      expect(rooms).must_be_nil
+      expect(rooms).must_be_empty
     end
   end
 end
