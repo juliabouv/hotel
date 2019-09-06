@@ -15,10 +15,17 @@ module Hotel
         @room_number = room.number
       elsif room_number
         @room_number = room_number
+        @room = Hotel::HotelBooker.new.find_room(@room_number)
       else
         raise ArgumentError, 'Room or room number is required'
       end
       # @room = room || []
+
+      connect
+    end
+
+    def connect
+      @room.add_reservation(self)
     end
     
     
@@ -39,7 +46,6 @@ module Hotel
         @status = :UPCOMING
       end
     end
-    
     
   end
 end
