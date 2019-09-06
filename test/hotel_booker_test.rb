@@ -99,30 +99,35 @@ describe "HotelBooker" do
     end
   end
   
-  describe "list_reservations_by_room" do
+  describe "list_rooms_available" do
     before do
       @hotel_booker = Hotel::HotelBooker.new
       @hotel_booker.book_reservation(Date.today + 2, Date.today + 5, room_number: 1)
+      @hotel_booker.book_reservation(Date.today + 3, Date.today + 7, room_number: 2)
+      @hotel_booker.book_reservation(Date.today + 1, Date.today + 6, room_number: 3)
     end
     
-    it "Returns array of reservations" do
-      reservations = @hotel_booker.list_reservations_by_room(1)
+    it "Returns array of rooms" do
+      rooms = @hotel_booker.list_rooms_available(Date.today + 2, Date.today + 5)
       
-      reservations.each do |reservation|
-        expect(reservation).must_be_kind_of Hotel::Reservation
+      rooms.each do |room|
+        expect(room).must_be_kind_of Hotel::Room
       end
-      expect(reservations).must_be_kind_of Array
-      expect(reservations.length).must_equal 1
+      expect(rooms).must_be_kind_of Array
     end
-
-    it "Returns reservations only for room specified" do
-      @hotel_booker.book_reservation(Date.today + 3, Date.today + 6, room_number: 5)
-      @hotel_booker.book_reservation(Date.today + 3, Date.today + 6, room_number: 10)
-      @hotel_booker.book_reservation(Date.today + 2, Date.today + 10, room_number: 1)
-
-      reservations = @hotel_booker.list_reservations_by_room(1)
-      expect(reservations).must_be_kind_of Array
-      expect(reservations.length).must_equal 2
+    
+    it "Returns only available rooms" do
+      rooms = @hotel_booker.list_rooms_available(Date.today + 2, Date.today + 5)
+      expect(rooms.length).must_equal 17
+    end
+    
+    it "Returns nil if no rooms available" do
+      # Book each room for these dates (Date.today + 2, Date.today + 5)
+      17.times do |index|
+        @hotel_booker.book_reservation(Date.today + 2, Date.today + 5, room_number: (4 + index))
+      end
+      rooms = @hotel_booker.list_rooms_available(Date.today + 2, Date.today + 5)
+      expect(rooms).must_be_nil
     end
   end
 end
