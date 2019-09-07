@@ -1,8 +1,8 @@
 module Hotel
   class Reservation
-    attr_reader :checkin_date, :checkout_date, :status, :room, :room_number
+    attr_reader :checkin_date, :checkout_date, :status, :room, :room_number, :block
     
-    def initialize(checkin_date:, checkout_date:, status: :UPCOMING, room: nil, room_number: nil)
+    def initialize(checkin_date:, checkout_date:, status: :UPCOMING, room: nil, room_number: nil, block: false)
       @checkin_date = checkin_date
       @checkout_date = checkout_date
       # requires valid status
@@ -19,8 +19,12 @@ module Hotel
       else
         raise ArgumentError, 'Room or room number is required'
       end
-      # @room = room || []
 
+      if block
+        @block = block
+      end
+
+      # every time a reservation is created, it is pushed into the @reservations array within that instance of room that is part of the reservation
       connect
     end
 
@@ -28,13 +32,16 @@ module Hotel
       @room.add_reservation(self)
     end
     
-    
     def total_reserved_nights
       return @checkout_date - @checkin_date
     end
     
     def total_cost
       return total_reserved_nights * @room.room_cost
+    end
+
+    def list_date_range
+      return (@checkin_date..@checkout_date).to_a
     end
     
     def switch_status
