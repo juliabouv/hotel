@@ -15,8 +15,11 @@ module Hotel
     end
     
     def available?(start_date, end_date)
+      date_range = (start_date..(end_date-1)).to_a
       @reservations.each do |reservation|
-        if (start_date > reservation.checkin_date && end_date < reservation.checkout_date) || (start_date < reservation.checkin_date && end_date > reservation.checkout_date) || (start_date < reservation.checkout_date && end_date > reservation.checkout_date) || (start_date < reservation.checkin_date && end_date > reservation.checkin_date) || (start_date == reservation.checkin_date && end_date == reservation.checkout_date)
+        # compares both date ranges for overlapping dates. Will return false if overlapping dates
+        # exception for start_date being the same as a reservation checkout_date
+        unless (date_range & reservation.list_date_range).empty? || start_date == reservation.list_date_range.last
           return false
         else
           return true
