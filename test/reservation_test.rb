@@ -28,7 +28,6 @@ describe "Reservation" do
       expect(@reservation.checkout_date).must_be_instance_of Date
       expect(@reservation.room_number).must_be_kind_of Integer
       expect(@reservation.room).must_be_kind_of Hotel::Room
-      p @reservation.room
     end
     
     it "creates instance with room_number, when only room included" do
@@ -93,6 +92,15 @@ describe "Reservation" do
         
         expect(@reservation.total_cost).must_equal cost
         expect(@reservation.total_cost).must_equal 200.00 * 3
+      end
+      
+      it "calculates cost with discounted rate for hotel blocks" do
+        @hotel_booker = Hotel::HotelBooker.new
+        @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
+        @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
+        cost = 150 * 4
+        
+        expect(@hotel_booker.reservations[0].total_cost).must_equal cost
       end
     end
     
