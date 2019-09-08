@@ -73,35 +73,35 @@ describe "HotelBooker" do
       }.must_raise ArgumentError
       
     end
-
+    
     it "books room with room_number argument if available" do
       @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 1)
       expect(@hotel_booker.reservations.length).must_equal 1
       expect(@hotel_booker.reservations[0].room_number).must_equal 1
-
+      
       @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 5)
       expect(@hotel_booker.reservations.length).must_equal 2
       expect(@hotel_booker.reservations[1].room_number).must_equal 5
     end
-
+    
     it "books first available room if no room_number argument provided" do
       20.times do |index|
         @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
         expect(@hotel_booker.reservations.length).must_equal 1 + index
       end
-
+      
       @hotel_booker.reservations.each_with_index do |reservation, index|
         expect(reservation.room_number).must_equal (1 + index)
       end
     end
-
+    
     it "raises an ArgumentError if you try to book a room_number that is unavailable for your requested dates" do
       @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 5)
       expect { 
         @hotel_booker.book_reservation(Date.today + 4, Date.today + 4, room_number: 5)
       }.must_raise ArgumentError
     end
-
+    
     it "raises an ArgumentError if no rooms are available" do
       20.times do
         @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
@@ -110,6 +110,51 @@ describe "HotelBooker" do
         @hotel_booker.book_reservation(Date.today + 4, Date.today + 6)
       }.must_raise ArgumentError
     end
+  end
+  
+  describe "#create_hotel_block" do
+    before do
+      @hotel_booker = Hotel::HotelBooker.new
+    end
+    
+    it "creates reservations where block attribute is array" do
+      @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
+      
+      expect(@hotel_booker.reservations[0].block).must_be_instance_of Array
+    end
+    
+    it "adds the rooms to the reservation.block as an array of rooms" do
+      @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
+      
+      p @hotel_booker.reservations
+      
+      @hotel_booker.reservations.each do |reservation|
+        reservation.block.each do |room|
+          expect(room).must_be_instance_of Hotel::Room
+        end
+      end
+    end
+    
+    it "will raise an exception if there aren't enough requested rooms during requested dates" do
+      20.times do |index|
+        @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
+      end
+      expect { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 3, 150) }.must_raise ArgumentError
+    end
+    
+    it "will raise an exception if you try to book a reservation for a room that conflicts with a hotel block" do
+      @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 20, 150)
+      
+      expect { @hotel_booker.book_reservation(Date.today + 2, Date.today + 5) }.must_raise ArgumentError
+    end
+    
+    it "will raise an exception if you try to book a hotel block conflicts with another hotel block" do
+      @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 17, 150)
+      
+      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 4, 150) }.must_raise ArgumentError
+    end
+    
+    
   end
   
   describe "#list_reservations_by_date" do
