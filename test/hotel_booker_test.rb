@@ -116,7 +116,7 @@ describe "HotelBooker" do
     before do
       @hotel_booker = Hotel::HotelBooker.new
     end
-    
+
     it "creates reservations where block attribute is array" do
       @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
       
@@ -125,8 +125,6 @@ describe "HotelBooker" do
     
     it "adds the rooms to the reservation.block as an array of rooms" do
       @hotel_booker.create_hotel_block(Date.today + 2, Date.today + 6, 3, 150)
-      
-      p @hotel_booker.reservations
       
       @hotel_booker.reservations.each do |reservation|
         reservation.block.each do |room|
@@ -143,17 +141,23 @@ describe "HotelBooker" do
     end
     
     it "will raise an exception if you try to book a reservation for a room that conflicts with a hotel block" do
-      @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 20, 150)
+      4.times { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 5, 150) }
       
       expect { @hotel_booker.book_reservation(Date.today + 2, Date.today + 5) }.must_raise ArgumentError
     end
     
     it "will raise an exception if you try to book a hotel block conflicts with another hotel block" do
-      @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 17, 150)
+      4.times { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 4, 150) }
       
-      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 4, 150) }.must_raise ArgumentError
+      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 5, 150) }.must_raise ArgumentError
     end
-    
+
+    it "will raise an exception if you try to book a hotel block with more than 5 rooms" do
+      @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 5, 150)
+      expect(@hotel_booker.reservations).wont_be_empty
+
+      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 8, 150) }.must_raise ArgumentError
+    end
     
   end
   

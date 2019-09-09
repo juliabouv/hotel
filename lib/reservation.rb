@@ -27,8 +27,6 @@ module Hotel
       else
         raise ArgumentError, 'Room, room number, or block are required'
       end
-      
-      
     end
 
     def connect_multiple(rooms)
