@@ -18,36 +18,25 @@ module Hotel
     def book_reservation(checkin_date, checkout_date, room_number: nil)
       verify_reservation_dates(checkin_date, checkout_date)
       chosen_room = choose_reservation_room(checkin_date, checkout_date, room_number: room_number)
-      reservation = Hotel::Reservation.new(
-        checkin_date: checkin_date,
-        checkout_date: checkout_date,
-        status: :IN_PROGRESS,
-        room: chosen_room,
-        room_number: room_number,
-        block: nil
-      )
+
+      reservation = Hotel_Factory::reservation(checkin_date: checkin_date, checkout_date: checkout_date, status: :IN_PROGRESS, room: chosen_room, room_number: room_number)
       
       @reservations << reservation
       @reservations.each { |reservation| reservation.switch_status }
-      
       return reservation
     end
     
     def create_hotel_block(checkin_date, checkout_date, number_of_rooms, discounted_rate)
       verify_reservation_dates(checkin_date, checkout_date)
 
+      raise ArgumentError.new "A block can only contain a maximum of 5 rooms" if number_of_rooms > 5
+
       block = find_available_block(checkin_date, checkout_date, number_of_rooms, discounted_rate)
-      reservation = Hotel::Reservation.new(
-        checkin_date: checkin_date,
-        checkout_date: checkout_date,
-        status: :IN_PROGRESS,
-        block: block,
-        discounted_rate: discounted_rate
-      )
+      
+      reservation = Hotel_Factory::hotel_block(checkin_date: checkin_date, checkout_date: checkout_date, status: :IN_PROGRESS, block: block, discounted_rate: discounted_rate)
 
       @reservations << reservation
       @reservations.each { |reservation| reservation.switch_status }
-      
       return reservation
     end
     
@@ -59,7 +48,7 @@ module Hotel
       end
       
       raise ArgumentError.new "Not enough rooms available during your requested time!" if block.length < number_of_rooms
-      
+
       return block
     end
     
@@ -69,7 +58,7 @@ module Hotel
       raise ArgumentError.new "Checkin date cannot be before today" if checkin_date < Date.today
       raise ArgumentError.new "Only overnight stays allowed!" if checkin_date == checkout_date
     end
-    # I can get a reservation of a room for a given date range, and that room will not be part of any other reservation overlapping that date range
+    
     def choose_reservation_room(checkin_date, checkout_date, room_number: nil)
       room_options = list_rooms_available(checkin_date, checkout_date)
       
@@ -80,7 +69,6 @@ module Hotel
         chosen_room = room_options.find { |room| room }
         raise ArgumentError.new "There are no rooms available for that date range" if chosen_room == nil 
       end
-      
       return chosen_room
     end
     
@@ -94,7 +82,6 @@ module Hotel
       return @reservations.select { |reservation| reservation.checkin_date <= date && reservation.checkout_date >= date }
     end
     
-    # I can view a list of rooms that are not reserved for a given date range, so that I can see all available rooms for that day
     def list_rooms_available(start_date, end_date)
       return @rooms.select { |room| room.available?(start_date, end_date) }
     end
