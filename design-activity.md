@@ -32,3 +32,7 @@ The second implementation better represents SRP because each class is responsibl
 
 10. Bonus question once you've read Metz ch. 3: Which implementation is more loosely coupled?
 Implementation B is more loosely coupled.
+
+
+Hotel:
+Factory Module is unnecessary and instance creations can be moved to the HotelBooker class.
