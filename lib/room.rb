@@ -7,7 +7,7 @@ module Hotel
     def initialize(number:, room_cost: 200.00, reservations: [])
       @number = number
       @room_cost = room_cost
-      @reservations = reservations || []
+      @reservations = reservations
     end
     
     def add_reservation(reservation)
