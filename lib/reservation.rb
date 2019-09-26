@@ -1,13 +1,10 @@
 module Hotel
   class Reservation
-    attr_reader :checkin_date, :checkout_date, :status, :room, :room_number, :block, :discounted_rate
+    attr_reader :checkin_date, :checkout_date, :room, :room_number, :block, :discounted_rate
     
-    def initialize(checkin_date:, checkout_date:, status: :UPCOMING, room: nil, room_number: nil, block: nil, discounted_rate: nil)
+    def initialize(checkin_date:, checkout_date:, room: nil, room_number: nil, block: nil, discounted_rate: nil)
       @checkin_date = checkin_date
       @checkout_date = checkout_date
-      # requires valid status
-      raise ArgumentError.new "#{status} is an invalid status" unless status == :UPCOMING || status == :IN_PROGRESS || status == :ENDED
-      @status = status
       
       # requires room or room number to initiate reservation class
       if room
@@ -22,13 +19,13 @@ module Hotel
       elsif block
         @block = block
         @discounted_rate = discounted_rate
-        # all rooms in block are pushed into the @resercations array for applicable room
+        # all rooms in block are pushed into the @reservations array for applicable room
         connect_multiple(@block)
       else
         raise ArgumentError, 'Room, room number, or block are required'
       end
     end
-
+    
     def connect_multiple(rooms)
       rooms.each do |room|
         room.add_reservation(self)
@@ -46,7 +43,7 @@ module Hotel
     def total_cost
       # calculate for discount of hotel_block if true
       return total_reserved_nights * @discounted_rate if @block
-
+      
       return total_reserved_nights * @room.room_cost
     end
     
@@ -54,13 +51,13 @@ module Hotel
       return (@checkin_date..@checkout_date).to_a
     end
     
-    def switch_status
+    def status
       if @checkin_date < Date.today && @checkout_date > Date.today
-        @status = :IN_PROGRESS
+        return :IN_PROGRESS
       elsif @checkout_date < Date.today
-        @status = :ENDED
+        return :ENDED
       elsif @checkin_date > Date.today
-        @status = :UPCOMING
+        return :UPCOMING
       end
     end
     

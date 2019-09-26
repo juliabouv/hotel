@@ -20,7 +20,7 @@ describe "Reservation" do
     end
     
     it "is set up for specific attributes and data types" do
-      [:checkin_date, :checkout_date, :status, :room, :room_number].each do |element|
+      [:checkin_date, :checkout_date, :room, :room_number].each do |element|
         expect(@reservation).must_respond_to element
       end
       
@@ -48,7 +48,7 @@ describe "Reservation" do
     end
     
     it "creates instance of reservation when only room_number included" do
-      room = Hotel::Room.new(
+      Hotel::Room.new(
         number: 1, 
         room_cost: 200.00
       )
@@ -65,7 +65,7 @@ describe "Reservation" do
     end
     
     it "raises an ArgumentError if no Room or room_number provided" do
-      room = Hotel::Room.new(
+      Hotel::Room.new(
         number: 1, 
         room_cost: 200.00
       )
@@ -104,42 +104,42 @@ describe "Reservation" do
       end
     end
     
-    describe "#switch_status" do
+    describe "#status" do
       before do
         @room = Hotel::Room.new(
           number: 1, 
           room_cost: 200.00
         )
       end
-      it "@status is :UPCOMING in reservation is booked in the future" do
+      it "status is :UPCOMING for reservation booked in the future" do
         @reservation = Hotel::Reservation.new(
           checkin_date: Date.today + 3,
           checkout_date: Date.today + 6,
           room: @room,
           room_number: 1
         )  
-        @reservation.switch_status
+        @reservation.status
         expect(@reservation.status).must_equal :UPCOMING
       end
-      it "@status is :IN_PROGRESS when reservation is currently happening" do
+      it "status is :IN_PROGRESS for reservation that is currently happening" do
         @reservation = Hotel::Reservation.new(
           checkin_date: Date.today - 1,
           checkout_date: Date.today + 2,
           room: @room,
           room_number: 1
         )  
-        @reservation.switch_status
+        @reservation.status
         expect(@reservation.status).must_equal :IN_PROGRESS
       end
       
-      it "@status is :ENDED when reservation is over" do
+      it "status is :ENDED when reservation is over" do
         @reservation = Hotel::Reservation.new(
           checkin_date: Date.today - 4,
           checkout_date: Date.today - 2,
           room: @room,
           room_number: 1
         )  
-        @reservation.switch_status
+        @reservation.status
         expect(@reservation.status).must_equal :ENDED
       end
     end
