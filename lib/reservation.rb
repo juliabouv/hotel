@@ -14,7 +14,7 @@ module Hotel
         connect_single(@room)
       elsif room_number
         @room_number = room_number
-        @room = Hotel::HotelBooker.new.find_room(@room_number)
+        @room = room
         connect_single(@room)
       elsif block
         @block = block

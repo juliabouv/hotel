@@ -35,4 +35,8 @@ Implementation B is more loosely coupled.
 
 
 Hotel:
-Factory Module is unnecessary and instance creations can be moved to the HotelBooker class.
+1. Improve construction of reservation and room classes in hotel booker. I'm not sure the Factory is the best option.
+Factory Module is unnecessary and instance creations were moved to the HotelBooker class.
+
+3. Revisit the use of "Hotel::HotelBooker.new.find_room(@room_number)" to create a new instance of HotelBooker to use the find_room method. There might be a better way to find the instance of room in this situation that's less weird.
+Reservations are instantiated in the HotelBooker class, so this is unnecessary to run in Reservation because it is already occurring in the HotelBooker book_reservation method.

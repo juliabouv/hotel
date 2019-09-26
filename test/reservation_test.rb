@@ -48,33 +48,19 @@ describe "Reservation" do
     end
     
     it "creates instance of reservation when only room_number included" do
-      Hotel::Room.new(
-        number: 1, 
-        room_cost: 200.00
-      )
+      # must go through HotelBooker class to find room associated with number
+      booker = Hotel::HotelBooker.new
+      booker.book_reservation(Date.today + 1, Date.today + 4, room_number: 1)
       
-      @reservation = Hotel::Reservation.new(
-        checkin_date: Date.today + 1,
-        checkout_date: Date.today + 4,
-        room: nil,
-        room_number: 1
-      )
-      expect (@reservation).must_be_instance_of Hotel::Reservation
-      expect (@reservation.room_number).must_equal 1
-      expect (@reservation.room_number).must_be_instance_of Integer
+      expect (booker.reservations[0]).must_be_instance_of Hotel::Reservation
+      expect (booker.reservations[0].room_number).must_equal 1
+      expect (booker.reservations[0].room_number).must_be_instance_of Integer
     end
     
-    it "raises an ArgumentError if no Room or room_number provided" do
-      Hotel::Room.new(
-        number: 1, 
-        room_cost: 200.00
-      )
-      
+    it "raises an ArgumentError if no Room, room_number, or block provided" do
       expect { @reservation = Hotel::Reservation.new(
         checkin_date: Date.today + 1,
         checkout_date: Date.today + 4,
-        room: nil,
-        room_number: nil
         )   }.must_raise ArgumentError
       end
     end
