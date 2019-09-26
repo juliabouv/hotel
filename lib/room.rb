@@ -4,7 +4,7 @@ module Hotel
     
     TOTAL_ROOMS = 20
     
-    def initialize(number:, room_cost: 200.00, reservations: nil)
+    def initialize(number:, room_cost: 200.00, reservations: [])
       @number = number
       @room_cost = room_cost
       @reservations = reservations || []
@@ -19,11 +19,7 @@ module Hotel
       @reservations.each do |reservation|
         # compares both date ranges for overlapping dates. Will return false if overlapping dates
         # exception for start_date being the same as a reservation checkout_date
-        unless (date_range & reservation.list_date_range).empty? || start_date == reservation.list_date_range.last
-          return false
-        else
-          return true
-        end
+        return (date_range & reservation.list_date_range).empty? || start_date == reservation.list_date_range.last
       end
     end
     
