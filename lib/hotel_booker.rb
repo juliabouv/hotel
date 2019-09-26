@@ -3,7 +3,6 @@ require 'pry'
 
 require_relative 'reservation'
 require_relative 'room'
-require_relative 'factory'
 
 module Hotel
   class HotelBooker
@@ -11,32 +10,51 @@ module Hotel
     
     # construction of all room instances moved to factory module
     def initialize
-      @rooms = Hotel_Factory::rooms
+      @rooms = list_rooms
       @reservations = []
+    end
+    
+    def list_rooms
+      @rooms = []
+      Hotel::Room::TOTAL_ROOMS.times do |index|
+        room = Hotel::Room.new(
+          number: index + 1
+        )
+        @rooms << room
+      end
+      return @rooms
     end
     
     def book_reservation(checkin_date, checkout_date, room_number: nil)
       verify_reservation_dates(checkin_date, checkout_date)
       chosen_room = choose_reservation_room(checkin_date, checkout_date, room_number: room_number)
-
-      reservation = Hotel_Factory::reservation(checkin_date: checkin_date, checkout_date: checkout_date, status: :IN_PROGRESS, room: chosen_room, room_number: room_number)
+      
+      reservation = Hotel::Reservation.new(
+        checkin_date: checkin_date,
+        checkout_date: checkout_date,
+        room: chosen_room,
+        room_number: room_number
+      )
       
       @reservations << reservation
-      @reservations.each { |reservation| reservation.switch_status }
       return reservation
     end
     
     def create_hotel_block(checkin_date, checkout_date, number_of_rooms, discounted_rate)
       verify_reservation_dates(checkin_date, checkout_date)
-
+      
       raise ArgumentError.new "A block can only contain a maximum of 5 rooms" if number_of_rooms > 5
-
+      
       block = find_available_block(checkin_date, checkout_date, number_of_rooms, discounted_rate)
       
-      reservation = Hotel_Factory::hotel_block(checkin_date: checkin_date, checkout_date: checkout_date, status: :IN_PROGRESS, block: block, discounted_rate: discounted_rate)
-
+      reservation = Hotel::Reservation.new(
+        checkin_date: checkin_date,
+        checkout_date: checkout_date,
+        block: block,
+        discounted_rate: discounted_rate
+      )
+      
       @reservations << reservation
-      @reservations.each { |reservation| reservation.switch_status }
       return reservation
     end
     
@@ -47,8 +65,8 @@ module Hotel
         break if block.length == number_of_rooms
       end
       
-      raise ArgumentError.new "Not enough rooms available during your requested time!" if block.length < number_of_rooms
-
+      raise StandardError.new "Not enough rooms available during your requested time!" if block.length < number_of_rooms
+      
       return block
     end
     
@@ -64,10 +82,10 @@ module Hotel
       
       if room_number
         chosen_room = find_room(room_number)
-        raise ArgumentError.new "That room is already booked for that date range" unless room_options.include?(chosen_room)
+        raise StandardError.new "That room is already booked for that date range" unless room_options.include?(chosen_room)
       else
         chosen_room = room_options.find { |room| room }
-        raise ArgumentError.new "There are no rooms available for that date range" if chosen_room == nil 
+        raise StandardError.new "There are no rooms available for that date range" if chosen_room == nil 
       end
       return chosen_room
     end

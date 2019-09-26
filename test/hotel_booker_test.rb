@@ -95,20 +95,20 @@ describe "HotelBooker" do
       end
     end
     
-    it "raises an ArgumentError if you try to book a room_number that is unavailable for your requested dates" do
+    it "raises a StandardError if you try to book a room_number that is unavailable for your requested dates" do
       @hotel_booker.book_reservation(Date.today + 4, Date.today + 8, room_number: 5)
       expect { 
         @hotel_booker.book_reservation(Date.today + 4, Date.today + 4, room_number: 5)
-      }.must_raise ArgumentError
+      }.must_raise StandardError
     end
     
-    it "raises an ArgumentError if no rooms are available" do
+    it "raises a StandardError if no rooms are available" do
       20.times do
         @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
       end
       expect { 
         @hotel_booker.book_reservation(Date.today + 4, Date.today + 6)
-      }.must_raise ArgumentError
+      }.must_raise StandardError
     end
   end
   
@@ -137,26 +137,26 @@ describe "HotelBooker" do
       20.times do |index|
         @hotel_booker.book_reservation(Date.today + 2, Date.today + 5)
       end
-      expect { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 3, 150) }.must_raise ArgumentError
+      expect { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 3, 150) }.must_raise StandardError
     end
     
     it "will raise an exception if you try to book a reservation for a room that conflicts with a hotel block" do
       4.times { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 5, 150) }
       
-      expect { @hotel_booker.book_reservation(Date.today + 2, Date.today + 5) }.must_raise ArgumentError
+      expect { @hotel_booker.book_reservation(Date.today + 2, Date.today + 5) }.must_raise StandardError
     end
     
     it "will raise an exception if you try to book a hotel block conflicts with another hotel block" do
       4.times { @hotel_booker.create_hotel_block(Date.today + 4, Date.today + 7, 4, 150) }
       
-      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 5, 150) }.must_raise ArgumentError
+      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 5, 150) }.must_raise StandardError
     end
 
     it "will raise an exception if you try to book a hotel block with more than 5 rooms" do
       @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 5, 150)
       expect(@hotel_booker.reservations).wont_be_empty
 
-      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 8, 150) }.must_raise ArgumentError
+      expect { @hotel_booker.create_hotel_block(Date.today + 5, Date.today + 8, 8, 150) }.must_raise StandardError
     end
     
   end
